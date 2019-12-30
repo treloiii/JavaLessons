@@ -5,9 +5,11 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-
+    /*
+        Faster!!
+     */
     public static void main(String[] args) throws InterruptedException {
-        int imagesCount=100;
+        int imagesCount=10000;
         int threadsCount=4;
         ImageUploader uploader=new ImageUploader();
         ExecutorService executorService= Executors.newFixedThreadPool(threadsCount);
