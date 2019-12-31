@@ -12,7 +12,7 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
         List<Integer> images1=new ArrayList<>();
         List<Integer> images2=new ArrayList<>();
-        for(int i=0;i<2000;i++){
+        for(int i=0;i<1000;i++){
             images1.add(i);
         }
         for(int i=1000;i<2000;i++){
@@ -22,67 +22,67 @@ public class Main {
         ImageUploader uploader2=new ImageUploader(images2);
         List<ImageUploader> uploaders=new ArrayList<>();
         uploaders.add(uploader1);
-//        uploaders.add(uploader2);
-       // ExecutorService executorService= Executors.newFixedThreadPool(4);
-//        executorService.submit(()->{
-//            try {
-//                uploader1.produce();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//        executorService.submit(()->{
-//            try{
-//                uploader1.consume();
-//            }
-//            catch (InterruptedException e){
-//                e.printStackTrace();
-//            }
-//        });
-//        executorService.submit(()->{
-//            try {
-//                uploader2.produce();
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//        });
-//        executorService.submit(()->{
-//            try{
-//                uploader2.consume();
-//            }
-//            catch (InterruptedException e){
-//                e.printStackTrace();
-//            }
-//        });
-        List<Thread> threads=new ArrayList<>();
-        for(ImageUploader uploader:uploaders){
-            Thread a=new Thread(()->{
-                try {
-                    uploader.produce();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            Thread b=new Thread(()->{
-                try {
-                    uploader.consume();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            });
-            threads.add(a);
-            threads.add(b);
-        }
-        for(Thread thread:threads){
-            thread.start();
-        }
+        uploaders.add(uploader2);
+        ExecutorService executorService= Executors.newFixedThreadPool(4);
+        executorService.submit(()->{
+            try {
+                uploader1.produce();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        executorService.submit(()->{
+            try{
+                uploader1.consume();
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        });
+        executorService.submit(()->{
+            try {
+                uploader2.produce();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        executorService.submit(()->{
+            try{
+                uploader2.consume();
+            }
+            catch (InterruptedException e){
+                e.printStackTrace();
+            }
+        });
+//        List<Thread> threads=new ArrayList<>();
+//        for(ImageUploader uploader:uploaders){
+//            Thread a=new Thread(()->{
+//                try {
+//                    uploader.produce();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//            Thread b=new Thread(()->{
+//                try {
+//                    uploader.consume();
+//                } catch (InterruptedException e) {
+//                    e.printStackTrace();
+//                }
+//            });
+//            threads.add(a);
+//            threads.add(b);
+//        }
+//        for(Thread thread:threads){
+//            thread.start();
+//        }
         long start=System.currentTimeMillis();
-        for(Thread thread:threads){
-            thread.join();
-        }
+//        for(Thread thread:threads){
+//            thread.join();
+//        }
 
-//        executorService.shutdown();
-//        executorService.awaitTermination(1, TimeUnit.DAYS);
+        executorService.shutdown();
+        executorService.awaitTermination(1, TimeUnit.DAYS);
         System.out.println("time: "+(System.currentTimeMillis()-start));
         System.out.println(Arrays.toString(uploader1.getResult().toArray()));
         System.out.println(Arrays.toString(uploader2.getResult().toArray()));
