@@ -2,15 +2,20 @@ package com.trelloiii;
 
 import java.util.Iterator;
 
-public class LinkedList<T> implements List<T> {
+public class LinkedList<T> implements List<T> , Queue<T> {
     Node<T> head=new Node<>(null,null,null);
     Node<T> tail=new Node<>(null,null,null);
     private int size;
+    private int maxSize=10;
     public LinkedList() {
         tail.prev=head;
         head.next=tail;
     }
-
+    public LinkedList(int maxSize) {
+        tail.prev=head;
+        head.next=tail;
+        this.maxSize=maxSize;
+    }
     @Override
     public void add(T o) {
         Node<T> node=new Node<>(o,head.next,head);
@@ -18,8 +23,8 @@ public class LinkedList<T> implements List<T> {
         head.next=node;
         node.index=size++;
     }
-    @Override
-    public void addToFront(T o){
+
+    public void addFront(T o){
         Node<T> node=new Node<>(o,tail,tail.prev);
         tail.prev.next=node;
         tail.prev=node;
@@ -43,12 +48,12 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public int indexOf(T o) {
-        return 0;
+        return node(o).index;
     }
 
     @Override
     public void set(T o, int index) {
-
+        node(index).current=o;
     }
 
     @Override
@@ -58,12 +63,14 @@ public class LinkedList<T> implements List<T> {
 
     @Override
     public void clear() {
-
+        tail.prev=head;
+        head.next=tail;
+        size=0;
     }
 
     @Override
     public Iterator<T> iterator() {
-        return null;
+        return new LinkedIterator<>(tail);
     }
 
     @Override
@@ -79,20 +86,39 @@ public class LinkedList<T> implements List<T> {
         return sb.toString();
     }
     private Node<T> node(int index){
-        Node<T> current=tail.prev;
-        while(current.prev!=null){
-            if(current.index==index)
-                return current;
-            current=current.prev;
+        boolean leftOrRight=index<((double) size/2.0);//if true, go from head to tail, else go from tail to head
+        if(leftOrRight){
+            Node<T> current = head.next;
+            while (current.next != null) {
+                if (current.index == index)
+                    return current;
+                current = current.next;
+            }
+        }else {
+            Node<T> current = tail.prev;
+            while (current.prev != null) {
+                if (current.index == index)
+                    return current;
+                current = current.prev;
+            }
         }
         throw new IndexOutOfBoundsException();
     }
     private Node<T> node(T o){
-        Node<T> current=tail.prev;
-        while(current.prev!=null){
-            if(current.current.equals(o))
-                return current;
-            current=current.prev;
+        Node<T> current = tail.prev;
+        if(o!=null) {
+            while (current.prev != null) {
+                if (current.current.equals(o))
+                    return current;
+                current = current.prev;
+            }
+        }
+        else{
+            while (current.prev != null) {
+                if (current.current==null)
+                    return current;
+                current = current.prev;
+            }
         }
         throw new IndexOutOfBoundsException();
     }
@@ -101,6 +127,26 @@ public class LinkedList<T> implements List<T> {
         removed.prev.next=removed.next;
         size--;
         return removed.current;
+    }
+
+    @Override
+    public void offer(T o) {
+        if(size<maxSize)
+            add(o);
+        else
+            throw new IllegalStateException("Queue is full");
+    }
+
+    @Override
+    public T peek() {
+        return head.next.current;
+    }
+
+    @Override
+    public T poll() {
+        Node<T> polled=head.next;
+        unlink(polled);
+        return polled.current;
     }
 
     private static class Node<T>{
@@ -112,6 +158,22 @@ public class LinkedList<T> implements List<T> {
             this.current = current;
             this.next = next;
             this.prev = prev;
+        }
+    }
+    class LinkedIterator<T> implements Iterator<T>{
+        Node<T> current;
+        LinkedIterator(Node<T> current){
+            this.current=current;
+        }
+        @Override
+        public boolean hasNext() {
+            current = current.prev;
+            return current.prev != null;
+        }
+
+        @Override
+        public T next() {
+            return current.current;
         }
     }
 }

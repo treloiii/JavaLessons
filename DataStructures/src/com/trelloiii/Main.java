@@ -7,12 +7,16 @@ public class Main {
     public static void main(String[] args) throws InterruptedException {
 	// write your code here
 //        java.util.ArrayList
-//        java.util.LinkedList<String> list=new java.util.LinkedList<>();
+//        java.util.Queue<String> list=new java.util.LinkedList<>();
+//        list.addFirst();
+//        list.remove("s")
 //        list.remove("sa")
-        List<String> myList=new LinkedList<>();
+        Queue<String> myList=new LinkedList<>(5);
         for(int i=0;i<5;i++)
-            myList.add(i+" str");
-        myList.remove(1);
-        System.out.println(myList);
+            myList.offer(i+" str");
+
+        System.out.println(myList.peek());
+//        myList.poll();
+        System.out.println(myList.size());
     }
 }
